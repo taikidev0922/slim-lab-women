@@ -145,15 +145,11 @@ h1 { max-width: 760px; font-size: clamp(32px, 9vw, 64px); }
   border: 1px solid rgba(236, 92, 147, .18);
 }
 .topic-card__image img {
-  width: 200%;
-  max-width: none;
-  height: 200%;
+  width: 100%;
+  height: 100%;
   object-fit: cover;
+  display: block;
 }
-.topic-card--meal .topic-card__image img { object-position: 0 0; }
-.topic-card--body .topic-card__image img { object-position: 100% 0; }
-.topic-card--age .topic-card__image img { object-position: 0 100%; }
-.topic-card--home .topic-card__image img { object-position: 100% 100%; }
 .topic-card__text { display: block; min-width: 0; }
 .topic-card strong { display: block; font-size: 16px; line-height: 1.25; }
 .topic-card__text span, .article-card p { color: var(--muted); font-size: 12px; line-height: 1.45; }
