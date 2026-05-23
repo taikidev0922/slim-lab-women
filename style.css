@@ -219,12 +219,19 @@ h1 { max-width: 760px; font-size: clamp(32px, 9vw, 64px); }
   .article-list { grid-template-columns: 1fr; }
   .section { padding: 42px 18px; }
   .topic-card {
-    grid-template-columns: 44px minmax(0, 1fr);
-    min-height: 66px;
-    padding: 8px;
-    gap: 8px;
+    display: block;
+    min-height: 0;
+    padding: 0;
   }
-  .topic-card__image { width: 44px; height: 44px; }
+  .topic-card__image {
+    width: 100%;
+    height: auto;
+    aspect-ratio: 16 / 10;
+    border: 0;
+    border-radius: 0;
+    border-bottom: 1px solid rgba(236, 92, 147, .14);
+  }
+  .topic-card__text { padding: 9px 10px 10px; }
   .topic-card strong { font-size: 14px; }
-  .topic-card__text span { font-size: 11px; }
+  .topic-card__text span { display: block; margin-top: 2px; font-size: 11px; }
 }
