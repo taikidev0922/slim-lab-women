@@ -29,6 +29,7 @@ jobs:
           RAKKO_API_KEY: ${{ secrets.RAKKO_API_KEY }}
           SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
           SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
+          DATABASE_URL: ${{ secrets.DATABASE_URL }}
           SITE_URL: ${{ secrets.SITE_URL }}
           DRY_RUN: ${{ github.event.inputs.dry_run || 'false' }}
         run: npm run blog:auto-post
