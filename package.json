@@ -1,0 +1,21 @@
+{
+  "name": "slim-lab-women",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "blog:auto-post": "node scripts/generate-article.mjs",
+    "blog:auto-post:dry": "node scripts/generate-article.mjs --dry-run",
+    "keywords:refresh": "node scripts/refresh-keywords.mjs",
+    "keywords:seed-reference": "node scripts/seed-reference-keywords.mjs",
+    "db:init": "node scripts/init-db.mjs",
+    "validate": "node scripts/validate-site.mjs",
+    "serve": "node scripts/serve-static.mjs"
+  },
+  "engines": {
+    "node": ">=20"
+  },
+  "dependencies": {
+    "pg": "^8.21.0"
+  }
+}

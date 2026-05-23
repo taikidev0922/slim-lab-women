@@ -1,0 +1,32 @@
+{
+  "source": "Fitstage search query reference shared by owner",
+  "updatedAt": "2026-05-23",
+  "usagePolicy": [
+    "優先度の高いクエリは記事生成候補としてSupabaseへ投入する",
+    "fit stage、出張パーソナル、オンラインパーソナルなど既存ブランド・サービス色の強い語は新サイトでは直接狙わない",
+    "ダイエットレシピ、献立、1週間、朝昼晩、簡単、作り置きのクラスタを初期SEOの柱にする",
+    "ビフォーアフター系は誇大表現や医療的断定を避け、記録方法・現実的な変化・安全な進め方として扱う"
+  ],
+  "keywords": [
+    {"keyword":"ダイエットレシピ 1週間分 朝昼晩 簡単","previous":0,"current":294,"cluster":"weekly-meal-plan","use":true},
+    {"keyword":"ダイエットレシピ 1週間分","previous":0,"current":43,"cluster":"weekly-meal-plan","use":true},
+    {"keyword":"fit stage","growth":"467%","current":17,"cluster":"brand","use":false},
+    {"keyword":"ダイエットレシピ 1週間分 作り置き","previous":0,"current":15,"cluster":"meal-prep","use":true},
+    {"keyword":"ダイエット献立 1週間","previous":0,"current":11,"cluster":"weekly-meal-plan","use":true},
+    {"keyword":"ダイエットレシピ 1週間分 簡単","previous":0,"current":9,"cluster":"weekly-meal-plan","use":true},
+    {"keyword":"ダイエットレシピ1週間分 朝昼晩","previous":0,"current":8,"cluster":"weekly-meal-plan","use":true},
+    {"keyword":"ダイエット ビフォーアフター","previous":0,"current":7,"cluster":"transformation","use":true},
+    {"keyword":"ダイエット 献立 1週間","previous":0,"current":5,"cluster":"weekly-meal-plan","use":true},
+    {"keyword":"ダイエットレシピ 1週間分 朝昼晩","previous":0,"current":5,"cluster":"weekly-meal-plan","use":true},
+    {"keyword":"出張パーソナル","previous":0,"current":5,"cluster":"service","use":false},
+    {"keyword":"ストレッチポール 効果","previous":0,"current":2,"cluster":"exercise-tool","use":true},
+    {"keyword":"ストレッチポール 姿勢改善","previous":0,"current":2,"cluster":"exercise-tool","use":true},
+    {"keyword":"ダイエット 食事メニュー 1週間 簡単","previous":0,"current":2,"cluster":"weekly-meal-plan","use":true},
+    {"keyword":"ダイエットメニュー 1週間","previous":0,"current":2,"cluster":"weekly-meal-plan","use":true},
+    {"keyword":"フラフープ 効果","previous":0,"current":2,"cluster":"exercise-tool","use":true},
+    {"keyword":"1週間ダイエットレシピ","previous":0,"current":1,"cluster":"weekly-meal-plan","use":true},
+    {"keyword":"きのこ ダイエット 1週間 レシピ","previous":0,"current":1,"cluster":"weekly-meal-plan","use":true},
+    {"keyword":"オンラインパーソナル","previous":0,"current":1,"cluster":"service","use":false},
+    {"keyword":"ストレッチポール 寝るだけ 効果","previous":0,"current":1,"cluster":"exercise-tool","use":true}
+  ]
+}

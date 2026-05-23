@@ -1,0 +1,24 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 630" role="img" aria-labelledby="title desc">
+  <title id="title">美スリム研究所</title>
+  <desc id="desc">女性のダイエット情報総合サイトのメインビジュアル</desc>
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop stop-color="#fff1f6"/>
+      <stop offset=".55" stop-color="#ffd8e7"/>
+      <stop offset="1" stop-color="#d8f5ef"/>
+    </linearGradient>
+    <linearGradient id="accent" x1="0" x2="1">
+      <stop stop-color="#ec5c93"/>
+      <stop offset="1" stop-color="#69c9b8"/>
+    </linearGradient>
+  </defs>
+  <rect width="1200" height="630" fill="url(#bg)"/>
+  <path d="M0 470 C190 390 260 570 450 485 C650 395 740 450 930 360 C1070 295 1140 320 1200 290 L1200 630 L0 630 Z" fill="#fff" opacity=".72"/>
+  <circle cx="950" cy="175" r="96" fill="#fff" opacity=".72"/>
+  <circle cx="1004" cy="206" r="68" fill="#ec5c93" opacity=".18"/>
+  <path d="M790 457 C810 340 885 275 973 252 C934 330 932 405 990 492 C911 498 846 488 790 457Z" fill="url(#accent)" opacity=".9"/>
+  <path d="M822 455 C853 387 910 340 962 316" fill="none" stroke="#fff" stroke-width="12" stroke-linecap="round"/>
+  <text x="92" y="190" fill="#ec5c93" font-size="28" font-family="Arial, sans-serif" font-weight="700">Women’s Diet Knowledge</text>
+  <text x="88" y="285" fill="#231923" font-size="74" font-family="'Yu Gothic', sans-serif" font-weight="800">美スリム研究所</text>
+  <text x="92" y="350" fill="#6f6270" font-size="30" font-family="'Yu Gothic', sans-serif" font-weight="600">女性のからだに寄り添う、続けられるダイエット情報。</text>
+</svg>

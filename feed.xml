@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<rss version="2.0">
+  <channel>
+    <title>美スリム研究所</title>
+    <link>https://slim-lab-women.vercel.app/</link>
+    <description>女性のためのダイエット情報総合サイト</description>
+    <language>ja</language>
+    <item>
+      <title>ダイエット中の朝ごはんは何が正解？女性向けの選び方と簡単メニュー</title>
+      <link>https://slim-lab-women.vercel.app/blog/diet-breakfast-women/</link>
+      <guid>https://slim-lab-women.vercel.app/blog/diet-breakfast-women/</guid>
+      <pubDate>Sat, 23 May 2026 00:00:00 +0900</pubDate>
+      <description>朝食を抜くより、たんぱく質と食物繊維を整える。女性向けに続けやすい朝ごはんを紹介。</description>
+    </item>
+  </channel>
+</rss>
