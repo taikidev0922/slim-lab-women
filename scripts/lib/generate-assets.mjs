@@ -25,7 +25,12 @@ export async function generateArticleImage({ prompt, outFile, fallbackTitle }) {
     })
   });
   const json = await response.json();
-  if (!response.ok) throw new Error(`OpenAI image error: ${JSON.stringify(json)}`);
+  if (!response.ok) {
+    console.warn(`OpenAI image warning: ${JSON.stringify(json)} — falling back to SVG`);
+    const svgFile = outFile.replace(/\.webp$/, '.svg');
+    await writeFallbackSvg(svgFile, fallbackTitle);
+    return svgFile;
+  }
   if (json.data?.[0]?.output_format && json.data[0].output_format !== OPENAI_IMAGE_OUTPUT_FORMAT) {
     throw new Error(`OpenAI image response format was ${json.data[0].output_format}, expected ${OPENAI_IMAGE_OUTPUT_FORMAT}`);
   }
