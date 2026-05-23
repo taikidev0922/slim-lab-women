@@ -1,6 +1,10 @@
 import fs from 'node:fs/promises';
+import path from 'node:path';
+
+const OPENAI_IMAGE_OUTPUT_FORMAT = 'webp';
 
 export async function generateArticleImage({ prompt, outFile, fallbackTitle }) {
+  assertWebpOutputPath(outFile);
   if (!process.env.OPENAI_API_KEY) {
     await writeFallbackSvg(outFile.replace(/\.webp$/, '.svg'), fallbackTitle);
     return outFile.replace(/\.webp$/, '.svg');
@@ -12,20 +16,37 @@ export async function generateArticleImage({ prompt, outFile, fallbackTitle }) {
       'Content-Type': 'application/json'
     },
     body: JSON.stringify({
-      model: 'gpt-image-1',
+      model: process.env.OPENAI_IMAGE_MODEL || 'gpt-image-2-2026-04-21',
       prompt,
       size: '1536x864',
       quality: 'medium',
-      output_format: 'webp',
-      output_compression: 82
+      output_format: OPENAI_IMAGE_OUTPUT_FORMAT,
+      output_compression: Number(process.env.OPENAI_IMAGE_OUTPUT_COMPRESSION || 82)
     })
   });
   const json = await response.json();
   if (!response.ok) throw new Error(`OpenAI image error: ${JSON.stringify(json)}`);
+  if (json.data?.[0]?.output_format && json.data[0].output_format !== OPENAI_IMAGE_OUTPUT_FORMAT) {
+    throw new Error(`OpenAI image response format was ${json.data[0].output_format}, expected ${OPENAI_IMAGE_OUTPUT_FORMAT}`);
+  }
   const b64 = json.data?.[0]?.b64_json;
   if (!b64) throw new Error('OpenAI image response did not include b64_json');
-  await fs.writeFile(outFile, Buffer.from(b64, 'base64'));
+  const image = Buffer.from(b64, 'base64');
+  if (!isWebp(image)) throw new Error('OpenAI image response was not WebP data');
+  await fs.writeFile(outFile, image);
   return outFile;
+}
+
+function assertWebpOutputPath(outFile) {
+  if (path.extname(outFile).toLowerCase() !== '.webp') {
+    throw new Error(`Article images must be written as .webp files: ${outFile}`);
+  }
+}
+
+function isWebp(buffer) {
+  return buffer.length >= 12
+    && buffer.toString('ascii', 0, 4) === 'RIFF'
+    && buffer.toString('ascii', 8, 12) === 'WEBP';
 }
 
 async function writeFallbackSvg(outFile, title) {

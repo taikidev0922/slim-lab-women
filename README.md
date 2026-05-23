@@ -18,6 +18,8 @@ GitHub Actions Secrets / ローカル環境に設定します。
 
 - `ANTHROPIC_API_KEY`
 - `OPENAI_API_KEY`
+- `OPENAI_IMAGE_MODEL` 任意。未指定時は `gpt-image-2-2026-04-21`
+- `OPENAI_IMAGE_OUTPUT_COMPRESSION` 任意。WebP圧縮率。未指定時は `82`
 - `RAKKO_API_KEY`
 - `SUPABASE_URL`
 - `SUPABASE_SERVICE_ROLE_KEY`
