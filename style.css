@@ -50,13 +50,9 @@ main, header, footer, section, nav { max-width: 100%; }
 }
 .brand { display: inline-flex; align-items: center; gap: 9px; font-weight: 800; }
 .brand__mark {
-  display: grid;
-  place-items: center;
   width: 36px;
   height: 36px;
-  border-radius: 50%;
-  color: #fff;
-  background: linear-gradient(135deg, var(--pink), var(--mint));
+  flex-shrink: 0;
 }
 .brand__text { font-size: 17px; }
 .site-nav { display: flex; align-items: center; gap: 18px; color: var(--muted); font-size: 14px; font-weight: 700; }
@@ -232,7 +228,6 @@ h1 { max-width: 760px; font-size: clamp(32px, 9vw, 64px); }
 .form-success__text { margin: 0 0 8px; color: var(--muted); }
 .site-footer { padding: 34px 20px; background: #2a1823; color: #fff; }
 .site-footer nav { display: flex; gap: 16px; flex-wrap: wrap; margin: 18px 0; color: #ffd4e4; font-size: 14px; }
-.brand--footer .brand__mark { background: var(--pink); }
 
 @media (max-width: 760px) {
   .site-header { min-height: 60px; }

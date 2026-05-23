@@ -121,7 +121,7 @@ export function articlePage({ config, article, bodyHtml, date }) {
 </head>
 <body class="article-page">
   <header class="site-header" id="header">
-    <a class="brand" href="/"><span class="brand__mark">美</span><span class="brand__text">${escapeHtml(config.siteName)}</span></a>
+    <a class="brand" href="/"><img src="/favicon.svg" alt="" class="brand__mark"><span class="brand__text">${escapeHtml(config.siteName)}</span></a>
     <button class="menu-button" id="menuButton" aria-label="メニュー" aria-controls="siteNav" aria-expanded="false"><span></span><span></span><span></span></button>
     <nav class="site-nav" id="siteNav"><a href="/">ホーム</a><a href="/blog/" aria-current="page">記事一覧</a><a href="/about/">運営方針</a><a href="/contact/">お問い合わせ</a></nav>
   </header>
@@ -138,7 +138,7 @@ export function articlePage({ config, article, bodyHtml, date }) {
       <nav class="article-nav"><a class="button" href="/blog/">記事一覧へ戻る</a></nav>
     </article>
   </main>
-  <footer class="site-footer"><p class="brand brand--footer"><span class="brand__mark">美</span><span class="brand__text">${escapeHtml(config.siteName)}</span></p><nav><a href="/about/">運営方針</a><a href="/blog/">記事一覧</a><a href="/contact/">お問い合わせ</a><a href="/sitemap.xml">サイトマップ</a></nav><small>&copy; 2026 ${escapeHtml(config.siteName)}</small></footer>
+  <footer class="site-footer"><p class="brand brand--footer"><img src="/favicon.svg" alt="" class="brand__mark"><span class="brand__text">${escapeHtml(config.siteName)}</span></p><nav><a href="/about/">運営方針</a><a href="/blog/">記事一覧</a><a href="/contact/">お問い合わせ</a><a href="/sitemap.xml">サイトマップ</a></nav><small>&copy; 2026 ${escapeHtml(config.siteName)}</small></footer>
   <script src="/script.js" defer></script>
 </body>
 </html>`;
