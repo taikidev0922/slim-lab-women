@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="robots" content="index, follow">
+  <link rel="canonical" href="https://slim-lab-women.vercel.app/contact/">
+  <title>お問い合わせ | 美スリム研究所</title>
+  <meta name="description" content="美スリム研究所へのお問い合わせページ。記事内容、掲載情報、運営へのご連絡はこちらからお送りください。">
+  <meta property="og:title" content="お問い合わせ | 美スリム研究所">
+  <meta property="og:description" content="美スリム研究所へのお問い合わせはこちら。記事内容、掲載情報、運営へのご連絡を受け付けています。">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://slim-lab-women.vercel.app/contact/">
+  <meta property="og:image" content="https://slim-lab-women.vercel.app/assets/og-default.svg">
+  <link rel="icon" href="/favicon.ico" sizes="any">
+  <link rel="icon" href="/favicon-16x16.png" type="image/png" sizes="16x16">
+  <link rel="icon" href="/favicon-32x32.png" type="image/png" sizes="32x32">
+  <link rel="icon" href="/favicon-48x48.png" type="image/png" sizes="48x48">
+  <link rel="icon" href="/favicon-96x96.png" type="image/png" sizes="96x96">
+  <link rel="icon" href="/favicon-192x192.png" type="image/png" sizes="192x192">
+  <link rel="apple-touch-icon" href="/apple-touch-icon.png" sizes="180x180">
+  <link rel="stylesheet" href="/style.css">
+  <script type="application/ld+json">
+  {"@context":"https://schema.org","@type":"ContactPage","name":"お問い合わせ","url":"https://slim-lab-women.vercel.app/contact/","description":"美スリム研究所へのお問い合わせページ。記事内容、掲載情報、運営へのご連絡を受け付けています。","mainEntity":{"@type":"Organization","name":"美スリム研究所","url":"https://slim-lab-women.vercel.app/","contactPoint":{"@type":"ContactPoint","contactType":"customer support","availableLanguage":"ja"}}}
+  </script>
+</head>
+<body>
+  <header class="site-header" id="header">
+    <a class="brand" href="/"><span class="brand__mark">美</span><span class="brand__text">美スリム研究所</span></a>
+    <button class="menu-button" id="menuButton" aria-label="メニュー" aria-controls="siteNav" aria-expanded="false"><span></span><span></span><span></span></button>
+    <nav class="site-nav" id="siteNav"><a href="/">ホーム</a><a href="/blog/">記事一覧</a><a href="/about/">運営方針</a><a href="/contact/" aria-current="page">お問い合わせ</a></nav>
+  </header>
+  <main>
+    <section class="page-hero">
+      <div class="page-hero__inner">
+        <p class="eyebrow">Contact</p>
+        <h1>お問い合わせ</h1>
+        <p>記事内容や掲載情報についてのご連絡は、下記フォームからお送りください。</p>
+      </div>
+    </section>
+    <section class="section contact-section">
+      <div class="contact-panel">
+        <div class="contact-panel__intro">
+          <h2>ご連絡前に</h2>
+          <p>健康状態や治療に関する個別判断はお受けできません。体調に不安がある場合は、医師や専門家へご相談ください。</p>
+          <ul>
+            <li>記事内容の誤り・修正依頼</li>
+            <li>掲載情報に関するご連絡</li>
+            <li>運営者へのお問い合わせ</li>
+          </ul>
+        </div>
+        <div class="contact-form-wrap">
+          <div class="form-success" id="formSuccess" aria-hidden="true" tabindex="-1">
+            <p class="form-success__eyebrow">MESSAGE SENT</p>
+            <h2 class="form-success__title">お問い合わせを受け付けました</h2>
+            <p class="form-success__text">ご連絡ありがとうございます。内容を確認し、必要に応じて返信いたします。</p>
+            <a class="button" href="/">ホームへ戻る</a>
+          </div>
+          <form class="contact-form" id="contactForm" action="https://formspree.io/f/xpqkrzjo" method="POST">
+            <input type="hidden" name="_subject" value="美スリム研究所 お問い合わせ">
+            <div class="form__group">
+              <label class="form__label" for="contactType">お問い合わせ種別 <span class="required">必須</span></label>
+              <select class="form__input" id="contactType" name="お問い合わせ種別" required>
+                <option value="">選択してください</option>
+                <option value="記事内容について">記事内容について</option>
+                <option value="掲載・提携について">掲載・提携について</option>
+                <option value="その他">その他</option>
+              </select>
+            </div>
+            <div class="form__group">
+              <label class="form__label" for="name">お名前 <span class="required">必須</span></label>
+              <input class="form__input" id="name" name="お名前" type="text" autocomplete="name" required>
+            </div>
+            <div class="form__group">
+              <label class="form__label" for="email">メールアドレス <span class="required">必須</span></label>
+              <input class="form__input" id="email" name="email" type="email" autocomplete="email" required>
+            </div>
+            <div class="form__group">
+              <label class="form__label" for="message">お問い合わせ内容 <span class="required">必須</span></label>
+              <textarea class="form__input form__textarea" id="message" name="お問い合わせ内容" rows="7" required></textarea>
+            </div>
+            <p class="form__note">送信内容はお問い合わせ対応のために使用します。営業目的の一斉送信はご遠慮ください。</p>
+            <button class="button form__submit" id="submitBtn" type="submit">送信する</button>
+          </form>
+        </div>
+      </div>
+    </section>
+  </main>
+  <footer class="site-footer"><p class="brand brand--footer"><span class="brand__mark">美</span><span class="brand__text">美スリム研究所</span></p><nav><a href="/about/">運営方針</a><a href="/blog/">記事一覧</a><a href="/contact/">お問い合わせ</a><a href="/sitemap.xml">サイトマップ</a></nav><small>&copy; 2026 美スリム研究所</small></footer>
+  <script src="/script.js" defer></script>
+  <script src="/contact/script.js" defer></script>
+</body>
+</html>

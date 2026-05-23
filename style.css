@@ -188,6 +188,48 @@ h1 { max-width: 760px; font-size: clamp(32px, 9vw, 64px); }
   background: var(--pink-soft);
   border: 1px solid var(--line);
 }
+.contact-panel {
+  display: grid;
+  grid-template-columns: minmax(0, .86fr) minmax(0, 1.14fr);
+  gap: 22px;
+  align-items: start;
+}
+.contact-panel__intro,
+.contact-form-wrap {
+  padding: 20px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  background: #fff;
+}
+.contact-panel__intro h2,
+.form-success__title { font-size: 22px; }
+.contact-panel__intro ul { padding-left: 1.2em; color: var(--muted); }
+.contact-form { display: grid; gap: 16px; }
+.form__group { display: grid; gap: 7px; }
+.form__label { font-size: 14px; font-weight: 800; }
+.required { color: var(--pink-dark); font-size: 11px; }
+.form__input {
+  width: 100%;
+  min-height: 48px;
+  padding: 12px 13px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  color: var(--ink);
+  background: #fffafc;
+  font: inherit;
+}
+.form__input:focus {
+  outline: 3px solid rgba(236, 92, 147, .18);
+  border-color: var(--pink);
+}
+.form__textarea { resize: vertical; min-height: 150px; }
+.form__note { margin: 0; color: var(--muted); font-size: 12px; line-height: 1.65; }
+.form__submit { width: 100%; border: 0; cursor: pointer; }
+.form__submit:disabled { opacity: .72; cursor: wait; }
+.form-success { display: none; text-align: center; }
+.form-success.show { display: grid; gap: 12px; justify-items: center; }
+.form-success__eyebrow { margin: 0; color: var(--pink-dark); font-size: 12px; font-weight: 800; letter-spacing: .08em; }
+.form-success__text { margin: 0 0 8px; color: var(--muted); }
 .site-footer { padding: 34px 20px; background: #2a1823; color: #fff; }
 .site-footer nav { display: flex; gap: 16px; flex-wrap: wrap; margin: 18px 0; color: #ffd4e4; font-size: 14px; }
 .brand--footer .brand__mark { background: var(--pink); }
@@ -239,4 +281,7 @@ h1 { max-width: 760px; font-size: clamp(32px, 9vw, 64px); }
   .topic-card__text { padding: 9px 10px 10px; }
   .topic-card strong { font-size: 14px; }
   .topic-card__text span { display: block; margin-top: 2px; font-size: 11px; }
+  .contact-panel { grid-template-columns: 1fr; gap: 14px; }
+  .contact-panel__intro,
+  .contact-form-wrap { padding: 16px; }
 }
