@@ -16,7 +16,7 @@ export async function generateArticleImage({ prompt, outFile, fallbackTitle }) {
       'Content-Type': 'application/json'
     },
     body: JSON.stringify({
-      model: process.env.OPENAI_IMAGE_MODEL || 'gpt-image-2-2026-04-21',
+      model: process.env.OPENAI_IMAGE_MODEL || 'gpt-image-2',
       prompt,
       size: '1536x864',
       quality: 'medium',
