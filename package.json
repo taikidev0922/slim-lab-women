@@ -8,6 +8,8 @@
     "blog:auto-post:dry": "node scripts/generate-article.mjs --dry-run",
     "keywords:refresh": "node scripts/refresh-keywords.mjs",
     "keywords:seed-reference": "node scripts/seed-reference-keywords.mjs",
+    "keywords:pipeline": "node scripts/keyword-pipeline.mjs",
+    "keywords:pipeline:dry": "node scripts/keyword-pipeline.mjs --dry-run",
     "db:init": "node scripts/init-db.mjs",
     "validate": "node scripts/validate-site.mjs",
     "serve": "node scripts/serve-static.mjs"

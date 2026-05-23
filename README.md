@@ -41,3 +41,23 @@ npm run blog:auto-post:dry
 ```
 
 Supabase REST APIの `service_role` がない場合でも、`DATABASE_URL` があればPostgresへ直接接続してキーワードと記事状態を管理できます。
+
+## ラッコキーワード選定パイプライン
+
+女性向けダイエット収益サイト用に、ラッコキーワードAPIから候補を集めて、SEO難易度・CPC・広告競合性・検索ボリュームでスコアリングします。
+
+```bash
+npm run keywords:pipeline:dry
+npm run keywords:pipeline -- --phase=phase1 --yes
+npm run keywords:pipeline -- --phase=score
+npm run keywords:pipeline -- --phase=volume --yes
+npm run keywords:pipeline -- --with-briefs --top-briefs=10 --yes
+```
+
+出力先:
+
+- `output/keyword-research/keywords_master.csv`
+- `output/keyword-research/site_structure.json`
+- `output/keyword-research/article_briefs.json`
+
+`cache/rakko/` にAPIレスポンスを保存し、再実行時のクレジット消費を抑えます。再取得したい場合は `--no-cache` を付けます。
