@@ -74,7 +74,7 @@ async function generateWithClaude(keyword, { useFallback = false } = {}) {
 - 検索意図にすぐ答える
 - スマホで読みやすい短めの段落
 - h2/h3を含む本文HTML
-- 記事途中に <img class="article-img" src="image-02.webp" alt="..."> を1回入れる
+- 記事途中に <img class="article-img" src="image-02.png" alt="..."> を1回入れる
 - FAQを2問以上
 - 内部リンクとして /blog/ を自然に1回入れる
 - JSONのみ返す${focusInstruction}
@@ -115,7 +115,7 @@ function fallbackArticle(keyword) {
     bodyHtml: `<p>${escapeHtml(keyword)}で大切なのは、短期間で無理をすることではなく、毎日の生活に入れやすい形へ整えることです。</p>
 <h2>${escapeHtml(keyword)}で最初に意識したいこと</h2>
 <p>まずは食事量を極端に減らすより、たんぱく質、食物繊維、水分、睡眠を整えます。女性は体調の波もあるため、続けられる強度にすることが重要です。</p>
-<img class="article-img" src="image-02.webp" alt="${escapeHtml(keyword)}の実践ポイントをまとめた表" width="1200" height="675" loading="lazy">
+<img class="article-img" src="image-02.png" alt="${escapeHtml(keyword)}の実践ポイントをまとめた表" width="1200" height="675" loading="lazy">
 <h2>失敗しやすいポイント</h2>
 <ul><li>最初から運動量を増やしすぎる</li><li>主食を完全に抜いて間食が増える</li><li>体重だけで判断して継続をやめる</li></ul>
 <h2>よくある質問</h2>
@@ -154,8 +154,8 @@ if (dryRun) {
 
 await fs.mkdir(dir, { recursive: true });
 await fs.writeFile(path.join(dir, 'index.html'), html);
-await generateArticleImage({ prompt: article.imagePrompt1, outFile: path.join(dir, 'image-01.webp'), fallbackTitle: article.title });
-await generateArticleImage({ prompt: article.imagePrompt2, outFile: path.join(dir, 'image-02.webp'), fallbackTitle: article.title });
+await generateArticleImage({ prompt: article.imagePrompt1, outFile: path.join(dir, 'image-01.png'), fallbackTitle: article.title });
+await generateArticleImage({ prompt: article.imagePrompt2, outFile: path.join(dir, 'image-02.png'), fallbackTitle: article.title });
 await updateIndexes();
 if (hasSupabaseConnection()) {
   await markKeywordUsed(keyword, article.slug);
@@ -184,8 +184,9 @@ async function updateIndexes() {
       const category = content.match(/<div class="article-meta"><span>(.*?)<\/span>/s)?.[1]?.replace(/<[^>]+>/g, '') || config.defaultCategory;
       const dateText = content.match(/<time datetime="([^"]+)"/)?.[1] || date;
       const hasWebp = await exists(path.join(blogDir, slug, 'image-01.webp'));
+      const hasPng = await exists(path.join(blogDir, slug, 'image-01.png'));
       const hasSvg = await exists(path.join(blogDir, slug, 'image-01.svg'));
-      articles.push({ slug, title, description, category, date: dateText, image: hasWebp ? 'image-01.webp' : hasSvg ? 'image-01.svg' : 'image-01.webp' });
+      articles.push({ slug, title, description, category, date: dateText, image: hasWebp ? 'image-01.webp' : hasPng ? 'image-01.png' : hasSvg ? 'image-01.svg' : 'image-01.png' });
     } catch {}
   }
   articles.sort((a, b) => b.date.localeCompare(a.date));
