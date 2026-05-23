@@ -61,3 +61,19 @@ npm run keywords:pipeline -- --with-briefs --top-briefs=10 --yes
 - `output/keyword-research/article_briefs.json`
 
 `cache/rakko/` にAPIレスポンスを保存し、再実行時のクレジット消費を抑えます。再取得したい場合は `--no-cache` を付けます。
+
+## Claude記事本文生成
+
+`output/keyword-research/article_briefs.json` を入力に、Claude APIでMarkdown記事を生成します。薬機法・景品表示法に配慮するsystemプロンプトは `prompts/article_writer.md` に外出ししています。
+
+```bash
+npm run articles:write:dry
+npm run articles:write -- --brief-file=output/keyword-research/article_briefs.json --limit=1
+```
+
+生成記事は検査結果に応じて次へ出力されます。
+
+- `content/articles/published/`
+- `content/articles/needs_review/`
+
+NG表現、文字数不足、URL形式、アフィリエイト/内部リンクプレースホルダ不足を検査し、問題がある記事は自動公開用の場所へ出さず `needs_review/` に隔離します。
