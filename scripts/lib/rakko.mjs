@@ -67,6 +67,7 @@ export function inferIntent(keyword) {
   if (/レシピ|食事|朝ごはん|夜ご飯|献立|コンビニ/.test(keyword)) return 'meal';
   if (/筋トレ|宅トレ|運動|ストレッチ/.test(keyword)) return 'exercise';
   if (/下腹|脚痩せ|二の腕|お腹|背中/.test(keyword)) return 'body-part';
+  if (/続かない|やる気|始められない|モチベ|習慣化|挫折|三日坊主|メンタル|自分に甘い|食べてしまう|ストレス/.test(keyword)) return 'mindset';
   if (/40代|50代|更年期|産後/.test(keyword)) return 'life-stage';
   return 'informational';
 }

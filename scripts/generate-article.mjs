@@ -19,10 +19,20 @@ async function ensureKeywordPool() {
   const count = await countUnusedKeywords();
   if (count >= 10 || !process.env.RAKKO_API_KEY) return;
   const seedCount = count === 0 ? 3 : 1;
-  await refreshKeywordsFromRakko(config.keywordSeeds.slice(0, seedCount));
+  await refreshKeywordsFromRakko(selectRefreshSeeds(seedCount));
+}
+
+function selectRefreshSeeds(count) {
+  const seeds = shouldUseMindKeyword()
+    ? [...(config.mindKeywords || []), ...(config.keywordSeeds || [])]
+    : config.keywordSeeds || [];
+  if (!seeds.length) return [];
+  const start = dayOfYear(date) % seeds.length;
+  return Array.from({ length: count }, (_, index) => seeds[(start + index) % seeds.length]);
 }
 
 async function chooseKeyword() {
+  if (shouldUseMindKeyword()) return chooseMindKeyword();
   if (!dryRun) await ensureKeywordPool();
   const dbCandidate = await getCandidateKeyword();
   if (dbCandidate) {
@@ -32,20 +42,42 @@ async function chooseKeyword() {
   return config.keywordSeeds[Math.floor(Math.random() * config.keywordSeeds.length)];
 }
 
+function shouldUseMindKeyword() {
+  const interval = Number(config.mindPostIntervalDays || 0);
+  return interval > 0 && Array.isArray(config.mindKeywords) && config.mindKeywords.length > 0 && dayOfYear(date) % interval === 0;
+}
+
+function chooseMindKeyword() {
+  const keywords = config.mindKeywords;
+  return keywords[dayOfYear(date) % keywords.length];
+}
+
+function dayOfYear(isoDate) {
+  const [year, month, day] = isoDate.split('-').map(Number);
+  const current = Date.UTC(year, month - 1, day);
+  const start = Date.UTC(year, 0, 0);
+  return Math.floor((current - start) / 86400000);
+}
+
 async function generateWithClaude(keyword, { useFallback = false } = {}) {
   if (useFallback || !process.env.ANTHROPIC_API_KEY) return fallbackArticle(keyword);
+  const articleCategory = inferCategory(keyword);
+  const focusInstruction = articleCategory === 'ダイエットマインド'
+    ? '\n- 「続かない」「始められない」「やる気が出ない」心理に寄り添い、習慣化・環境づくり・小さな開始行動を中心にする\n- 根性論や自己否定を避け、食事制限や運動メニューだけの記事にしない'
+    : '';
   const prompt = `あなたは日本語SEO編集者です。女性向けダイエット情報サイト「${config.siteName}」の記事を作成してください。
 
 主キーワード: ${keyword}
 条件:
 - 医療的な断定、過度な減量訴求、不安を煽る表現は禁止
+- categoryは「${articleCategory}」にする
 - 検索意図にすぐ答える
 - スマホで読みやすい短めの段落
 - h2/h3を含む本文HTML
 - 記事途中に <img class="article-img" src="image-02.webp" alt="..."> を1回入れる
 - FAQを2問以上
 - 内部リンクとして /blog/ を自然に1回入れる
-- JSONのみ返す
+- JSONのみ返す${focusInstruction}
 
 JSON schema:
 {"title":"32文字前後のSEOタイトル","description":"110文字前後のメタディスクリプション","slug":"英数字ハイフンのURL slug","category":"カテゴリ","imageAlt1":"サムネイル画像alt","imageAlt2":"本文画像alt","imagePrompt1":"gpt-image用の日本語プロンプト","imagePrompt2":"gpt-image用の日本語プロンプト","bodyHtml":"本文HTML"}`;
@@ -75,7 +107,7 @@ function fallbackArticle(keyword) {
     title,
     description: `${keyword}について、女性が無理なく続けるための考え方、食事や運動の整え方、失敗しやすいポイントをわかりやすく解説します。`,
     slug: slugify(keyword),
-    category: config.defaultCategory,
+    category: inferCategory(keyword),
     imageAlt1: `${keyword}を女性向けに解説する図解`,
     imageAlt2: `${keyword}の実践ポイントをまとめた表`,
     imagePrompt1: `女性向けダイエット情報サイトの記事サムネイル。テーマは「${keyword}」。ピンク基調、清潔、スマホで見やすい、文字なし、健康的な食事と軽い運動の雰囲気。`,
@@ -95,12 +127,19 @@ function fallbackArticle(keyword) {
 
 function normalizeArticle(article, keyword) {
   article.slug = slugify(article.slug || keyword);
-  article.category ||= config.defaultCategory;
+  article.category ||= inferCategory(keyword);
   article.imageAlt1 ||= `${article.title}のサムネイル`;
   article.imageAlt2 ||= `${article.title}の図解`;
   article.imagePrompt1 ||= `${article.title}。女性向けダイエットサイト用、ピンク基調、健康的、文字なし。`;
   article.imagePrompt2 ||= `${article.title}の内容を説明する図解、ピンク基調、文字なし。`;
   return article;
+}
+
+function inferCategory(keyword) {
+  if (/続かない|やる気|始められない|モチベ|習慣化|挫折|三日坊主|メンタル|自分に甘い|食べてしまう|ストレス/.test(keyword)) {
+    return 'ダイエットマインド';
+  }
+  return config.defaultCategory;
 }
 
 const keyword = await chooseKeyword();
@@ -157,7 +196,7 @@ async function updateIndexes() {
 
 function renderBlogIndex(articles) {
   const cards = articles.map((a) => `<article class="article-card"><a href="/blog/${a.slug}/"><img src="/blog/${a.slug}/${a.image}" alt="${escapeHtml(a.title)}" width="800" height="450" loading="lazy"><span>${escapeHtml(a.category)}</span><h2>${escapeHtml(a.title)}</h2><p>${escapeHtml(a.description)}</p></a></article>`).join('\n');
-  return `<!DOCTYPE html><html lang="ja"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1"><meta name="robots" content="index, follow, max-image-preview:large"><link rel="canonical" href="${config.siteUrl}/blog/"><title>記事一覧 | ${config.siteName}</title><meta name="description" content="女性向けダイエット記事一覧。食事管理、宅トレ、部位別ダイエット、年代別の体型悩みをわかりやすく解説します。"><meta property="og:title" content="記事一覧 | ${config.siteName}"><meta property="og:description" content="女性向けダイエット記事一覧。"><meta property="og:type" content="website"><meta property="og:url" content="${config.siteUrl}/blog/"><meta property="og:image" content="${config.siteUrl}/assets/og-default.svg"><link rel="icon" href="/favicon.svg" type="image/svg+xml"><link rel="stylesheet" href="/style.css"></head><body><header class="site-header" id="header"><a class="brand" href="/"><span class="brand__mark">美</span><span class="brand__text">${config.siteName}</span></a><button class="menu-button" id="menuButton" aria-label="メニュー" aria-controls="siteNav" aria-expanded="false"><span></span><span></span><span></span></button><nav class="site-nav" id="siteNav"><a href="/">ホーム</a><a href="/blog/" aria-current="page">記事一覧</a><a href="/about/">運営方針</a></nav></header><main><section class="page-hero"><div class="page-hero__inner"><p class="eyebrow">Blog</p><h1>記事一覧</h1><p>女性のダイエットに役立つテーマを、検索意図ごとに深く、読みやすく整理しています。</p></div></section><section class="section"><div class="article-list blog-grid">${cards}</div></section></main><footer class="site-footer"><p class="brand brand--footer"><span class="brand__mark">美</span><span class="brand__text">${config.siteName}</span></p><nav><a href="/about/">運営方針</a><a href="/sitemap.xml">サイトマップ</a></nav><small>&copy; 2026 ${config.siteName}</small></footer><script src="/script.js" defer></script></body></html>`;
+  return `<!DOCTYPE html><html lang="ja"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1"><meta name="robots" content="index, follow, max-image-preview:large"><link rel="canonical" href="${config.siteUrl}/blog/"><title>記事一覧 | ${config.siteName}</title><meta name="description" content="女性向けダイエット記事一覧。食事管理、宅トレ、部位別ダイエット、続けるためのマインドをわかりやすく解説します。"><meta property="og:title" content="記事一覧 | ${config.siteName}"><meta property="og:description" content="女性向けダイエット記事一覧。"><meta property="og:type" content="website"><meta property="og:url" content="${config.siteUrl}/blog/"><meta property="og:image" content="${config.siteUrl}/assets/og-default.svg"><link rel="icon" href="/favicon.ico" sizes="any"><link rel="icon" href="/favicon-48x48.png" type="image/png" sizes="48x48"><link rel="apple-touch-icon" href="/apple-touch-icon.png" sizes="180x180"><link rel="stylesheet" href="/style.css"></head><body><header class="site-header" id="header"><a class="brand" href="/"><span class="brand__mark">美</span><span class="brand__text">${config.siteName}</span></a><button class="menu-button" id="menuButton" aria-label="メニュー" aria-controls="siteNav" aria-expanded="false"><span></span><span></span><span></span></button><nav class="site-nav" id="siteNav"><a href="/">ホーム</a><a href="/blog/" aria-current="page">記事一覧</a><a href="/about/">運営方針</a></nav></header><main><section class="page-hero"><div class="page-hero__inner"><p class="eyebrow">Blog</p><h1>記事一覧</h1><p>女性のダイエットに役立つテーマを、検索意図ごとに深く、読みやすく整理しています。</p></div></section><section class="section"><div class="article-list blog-grid">${cards}</div></section></main><footer class="site-footer"><p class="brand brand--footer"><span class="brand__mark">美</span><span class="brand__text">${config.siteName}</span></p><nav><a href="/about/">運営方針</a><a href="/sitemap.xml">サイトマップ</a></nav><small>&copy; 2026 ${config.siteName}</small></footer><script src="/script.js" defer></script></body></html>`;
 }
 
 async function exists(file) {
