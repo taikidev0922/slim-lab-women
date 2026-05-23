@@ -66,7 +66,7 @@ main, header, footer, section, nav { max-width: 100%; }
 
 .hero {
   position: relative;
-  min-height: min(760px, calc(100svh - 64px));
+  min-height: min(640px, 78svh);
   display: grid;
   align-items: start;
   overflow: hidden;
@@ -205,8 +205,8 @@ h1 { max-width: 760px; font-size: clamp(32px, 9vw, 64px); }
   .site-nav.open { display: flex; }
   .site-nav a { padding: 10px 0; }
   .hero {
-    min-height: calc(100svh - 60px);
-    max-height: 760px;
+    min-height: clamp(420px, 58svh, 500px);
+    max-height: 500px;
   }
   .hero__media img { object-position: center bottom; }
   .hero::after {
