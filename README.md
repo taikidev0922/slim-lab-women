@@ -62,13 +62,14 @@ npm run keywords:pipeline -- --with-briefs --top-briefs=10 --yes
 
 `cache/rakko/` にAPIレスポンスを保存し、再実行時のクレジット消費を抑えます。再取得したい場合は `--no-cache` を付けます。
 
-## Claude記事本文生成
+## Claude情報記事生成
 
-`output/keyword-research/article_briefs.json` を入力に、Claude APIでMarkdown記事を生成します。薬機法・景品表示法に配慮するsystemプロンプトは `prompts/article_writer.md` に外出ししています。
+`output/keyword-research/article_briefs.json` を入力に、Claude APIで収益リンクなしのMarkdown情報記事を生成します。薬機法・景品表示法に配慮するsystemプロンプトは `prompts/article_writer.md` に外出ししています。
 
 ```bash
 npm run articles:write:dry
-npm run articles:write -- --brief-file=output/keyword-research/article_briefs.json --limit=1
+npm run articles:write -- --brief-file=output/keyword-research/article_briefs.json
+npm run articles:write -- --brief-file=output/keyword-research/article_briefs.json --batch=3
 ```
 
 生成記事は検査結果に応じて次へ出力されます。
@@ -76,4 +77,6 @@ npm run articles:write -- --brief-file=output/keyword-research/article_briefs.js
 - `content/articles/published/`
 - `content/articles/needs_review/`
 
-NG表現、文字数不足、URL形式、アフィリエイト/内部リンクプレースホルダ不足を検査し、問題がある記事は自動公開用の場所へ出さず `needs_review/` に隔離します。
+デフォルトでは未処理ブリーフを1件だけ消化するため、毎日1本のcron実行に向いています。`--batch=N` で複数本をまとめて生成できます。
+
+NG表現、文字数不足、URL形式、アフィリエイト/内部リンクの混入を検査し、問題がある記事は自動公開用の場所へ出さず `needs_review/` に隔離します。`monetize_type` や `internal_link_to` は本文に使わず、将来の収益化用メタデータとしてfrontmatterに保持します。
