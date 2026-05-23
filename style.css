@@ -59,26 +59,36 @@ img { display: block; max-width: 100%; height: auto; }
   position: relative;
   min-height: min(760px, calc(100svh - 64px));
   display: grid;
-  align-items: end;
+  align-items: start;
   overflow: hidden;
-  background: #2b1824;
+  background: #fff1f6;
 }
 .hero__media { position: absolute; inset: 0; }
-.hero__media img { width: 100%; height: 100%; object-fit: cover; opacity: .82; }
-.hero::after { content: ""; position: absolute; inset: 0; background: linear-gradient(180deg, rgba(43,24,36,.04), rgba(43,24,36,.8)); }
+.hero__media img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center bottom;
+}
+.hero::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(180deg, rgba(255,250,252,.92) 0%, rgba(255,241,246,.72) 36%, rgba(43,24,36,.08) 70%, rgba(43,24,36,.18) 100%);
+}
 .hero__content {
   position: relative;
   z-index: 1;
   width: min(100%, var(--max));
   margin: 0 auto;
-  padding: 0 20px 54px;
-  color: #fff;
+  padding: 44px 20px 0;
+  color: var(--ink);
 }
 .eyebrow { margin: 0 0 8px; color: var(--pink); font-size: 12px; font-weight: 800; text-transform: uppercase; letter-spacing: .08em; }
-.hero .eyebrow { color: #ffd4e4; }
+.hero .eyebrow { color: var(--pink-dark); }
 h1, h2, h3 { line-height: 1.35; margin: 0; letter-spacing: 0; }
 h1 { max-width: 760px; font-size: clamp(32px, 9vw, 64px); }
-.hero p:not(.eyebrow) { max-width: 620px; margin: 16px 0 24px; font-size: 16px; }
+.hero p:not(.eyebrow) { max-width: 620px; margin: 12px 0 20px; color: var(--muted); font-size: 16px; }
 .button {
   display: inline-flex;
   align-items: center;
@@ -189,8 +199,17 @@ h1 { max-width: 760px; font-size: clamp(32px, 9vw, 64px); }
   }
   .site-nav.open { display: flex; }
   .site-nav a { padding: 10px 0; }
-  .hero { min-height: 620px; }
-  .hero__content { padding-bottom: 36px; }
+  .hero {
+    min-height: calc(100svh - 60px);
+    max-height: 760px;
+  }
+  .hero__media img { object-position: center bottom; }
+  .hero::after {
+    background: linear-gradient(180deg, rgba(255,250,252,.96) 0%, rgba(255,241,246,.82) 34%, rgba(255,241,246,.18) 62%, rgba(43,24,36,.1) 100%);
+  }
+  .hero__content { padding: 30px 18px 0; }
+  .hero h1 { max-width: 11em; font-size: 32px; line-height: 1.28; }
+  .hero p:not(.eyebrow) { max-width: 20em; font-size: 14px; line-height: 1.7; margin: 10px 0 16px; }
   .topic-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 9px; }
   .article-list { grid-template-columns: 1fr; }
   .section { padding: 42px 18px; }
