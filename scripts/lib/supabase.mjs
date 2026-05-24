@@ -93,6 +93,30 @@ export async function upsertKeywords(items) {
   return rows;
 }
 
+export async function getUsedKeywords() {
+  if (!hasSupabaseConnection()) return [];
+  if (!hasRest()) {
+    const rows = await query('select keyword from public.keywords where status = $1', ['used']);
+    return (rows || []).map((r) => r.keyword);
+  }
+  const rows = await request('keywords?status=eq.used&select=keyword');
+  return (rows || []).map((r) => r.keyword);
+}
+
+export async function rejectKeyword(id) {
+  if (!hasSupabaseConnection() || !id) return null;
+  if (!hasRest()) {
+    return query(
+      'update public.keywords set status = $1, updated_at = now() where id = $2',
+      ['rejected', id]
+    );
+  }
+  return request(`keywords?id=eq.${id}`, {
+    method: 'PATCH',
+    body: JSON.stringify({ status: 'rejected', updated_at: new Date().toISOString() })
+  });
+}
+
 export async function getCandidateKeyword() {
   if (!hasSupabaseConnection()) return null;
   if (!hasRest()) {

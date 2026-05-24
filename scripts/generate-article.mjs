@@ -4,7 +4,7 @@ import { fileURLToPath } from 'node:url';
 import { loadEnv } from './lib/env.mjs';
 import { loadConfig, todayJst, nowJst } from './lib/config.mjs';
 import { articlePage, escapeHtml, slugify } from './lib/html.mjs';
-import { countUnusedKeywords, getCandidateKeyword, hasSupabaseConnection, insertArticle, markKeywordUsed, reserveKeyword } from './lib/supabase.mjs';
+import { countUnusedKeywords, getCandidateKeyword, getUsedKeywords, rejectKeyword, hasSupabaseConnection, insertArticle, markKeywordUsed, reserveKeyword } from './lib/supabase.mjs';
 import { refreshKeywordsFromRakko } from './lib/rakko.mjs';
 import { generateArticleImage } from './lib/generate-assets.mjs';
 
@@ -35,12 +35,39 @@ function selectRefreshSeeds(count) {
 async function chooseKeyword() {
   if (shouldUseMindKeyword()) return chooseMindKeyword();
   if (!dryRun) await ensureKeywordPool();
-  const dbCandidate = await getCandidateKeyword();
-  if (dbCandidate) {
-    await reserveKeyword(dbCandidate.id);
-    return dbCandidate.keyword;
+  const usedKeywords = await getUsedKeywords();
+  // 類似キーワードをスキップして重複テーマの記事生成を防ぐ
+  for (let attempt = 0; attempt < 8; attempt++) {
+    const candidate = await getCandidateKeyword();
+    if (!candidate) break;
+    if (isTooSimilarToUsed(candidate.keyword, usedKeywords)) {
+      console.log(`[keyword] "${candidate.keyword}" は既存記事と類似 → rejected`);
+      await rejectKeyword(candidate.id);
+      continue;
+    }
+    await reserveKeyword(candidate.id);
+    return candidate.keyword;
   }
   return config.keywordSeeds[Math.floor(Math.random() * config.keywordSeeds.length)];
+}
+
+// 汎用的すぎる単語（ほぼ全記事に含まれる）を除外したうえで主題語を抽出
+const GENERIC_WORDS = new Set([
+  'ダイエット', '女性', '簡単', '方法', '効果', 'コツ', '始め方', '習慣', 'おすすめ',
+  '初心者', '食事', 'レシピ', '運動', 'トレーニング', '対策', '解説', 'まとめ'
+]);
+
+function extractTopicWords(keyword) {
+  return keyword.split(/[\s　]+/).filter((w) => w.length >= 3 && !GENERIC_WORDS.has(w));
+}
+
+function isTooSimilarToUsed(keyword, usedKeywords) {
+  const newTopics = extractTopicWords(keyword);
+  if (!newTopics.length) return false;
+  return usedKeywords.some((used) => {
+    const usedTopics = extractTopicWords(used);
+    return newTopics.some((w) => usedTopics.includes(w));
+  });
 }
 
 function shouldUseMindKeyword() {
@@ -60,11 +87,14 @@ function dayOfYear(isoDate) {
   return Math.floor((current - start) / 86400000);
 }
 
-async function generateWithClaude(keyword, { useFallback = false } = {}) {
+async function generateWithClaude(keyword, { useFallback = false, existingArticles = [] } = {}) {
   if (useFallback || !process.env.ANTHROPIC_API_KEY) return fallbackArticle(keyword);
   const articleCategory = inferCategory(keyword);
   const focusInstruction = articleCategory === 'ダイエットマインド'
     ? '\n- 「続かない」「始められない」「やる気が出ない」心理に寄り添い、習慣化・環境づくり・小さな開始行動を中心にする\n- 根性論や自己否定を避け、食事制限や運動メニューだけの記事にしない'
+    : '';
+  const relatedArticlesNote = existingArticles.length > 0
+    ? `\n既存の公開記事一覧（関連するものがあれば本文中に自然な内部リンクを1〜2個追加すること。関連がなければ不要）:\n${existingArticles.map((a) => `- /blog/${a.slug}/ : ${a.title}`).join('\n')}`
     : '';
   const prompt = `あなたは日本語SEO編集者です。女性向けダイエット情報サイト「${config.siteName}」の記事を作成してください。
 
@@ -87,9 +117,9 @@ async function generateWithClaude(keyword, { useFallback = false } = {}) {
   ⑧ 形式はステップ/比較表/チェックリスト/ポイントカード/タイムライン等、記事の核心に最適なものを自由に選ぶ
   ⑨ 表を使う場合：th{background:#fff1f6;font-weight:800;border-bottom:2px solid #ec5c93} td{border-bottom:1px solid #fff1f6} overflow-x:auto でスマホ対応
 - FAQを2問以上（<div class="faq-box"><h3>質問</h3><p>回答</p></div> 形式で必ず出力）
-- 内部リンクとして /blog/ を1回入れる。アンカーテキストはリンク先のテーマを表す語句にする（例:「ダイエット習慣の関連記事」「食事管理の記事一覧」など。サイト名やURLをそのまま使わない）
+- 内部リンクとして /blog/ を必ず1回入れる。アンカーテキストはリンク先のテーマを表す語句にする（例:「ダイエット習慣の関連記事」「食事管理の記事一覧」など。サイト名やURLをそのまま使わない）
 - 数字・具体的な期間・ステップを含め、抽象的な表現を避ける
-- JSONのみ返す${focusInstruction}
+- JSONのみ返す${focusInstruction}${relatedArticlesNote}
 
 JSON schema:
 {"title":"32文字前後のSEOタイトル","description":"110文字前後のメタディスクリプション","slug":"英数字ハイフンのURL slug","category":"カテゴリ","imageAlt1":"サムネイル画像alt","imagePrompt1":"サムネイル用：記事テーマに合った写真風イメージ。人物・食事・運動シーン等、ピンク基調、清潔感、文字なし","bodyHtml":"本文HTML（インフォグラフィックHTMLを含む）"}`;
@@ -162,7 +192,8 @@ function inferCategory(keyword) {
 }
 
 const keyword = await chooseKeyword();
-const article = normalizeArticle(await generateWithClaude(keyword, { useFallback: dryRun }), keyword);
+const existingArticles = await getExistingArticleSummaries();
+const article = normalizeArticle(await generateWithClaude(keyword, { useFallback: dryRun, existingArticles }), keyword);
 const dir = path.join(root, 'blog', article.slug);
 const html = articlePage({ config, article, bodyHtml: article.bodyHtml, date });
 
@@ -188,6 +219,20 @@ if (hasSupabaseConnection()) {
   });
 }
 console.log(`Generated /blog/${article.slug}/ for keyword: ${keyword}`);
+
+async function getExistingArticleSummaries() {
+  const blogDir = path.join(root, 'blog');
+  const slugs = (await fs.readdir(blogDir, { withFileTypes: true })).filter((d) => d.isDirectory()).map((d) => d.name);
+  const articles = [];
+  for (const slug of slugs) {
+    try {
+      const content = await fs.readFile(path.join(blogDir, slug, 'index.html'), 'utf8');
+      const title = content.match(/<h1[^>]*>(.*?)<\/h1>/s)?.[1]?.replace(/<[^>]+>/g, '') || slug;
+      articles.push({ slug, title });
+    } catch {}
+  }
+  return articles;
+}
 
 async function updateIndexes() {
   const blogDir = path.join(root, 'blog');
