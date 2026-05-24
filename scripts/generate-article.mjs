@@ -74,14 +74,22 @@ async function generateWithClaude(keyword, { useFallback = false } = {}) {
 - 検索意図にすぐ答える
 - スマホで読みやすい短めの段落
 - h2/h3を含む本文HTML
-- 記事途中に <img class="article-img" src="image-02.webp" alt="..."> を1回入れる
+- 記事途中にインフォグラフィックを1個入れる。記事内容に合ったタイプを選び、以下のHTMLをそのままbodyHtmlに含める：
+  【ステップ型】手順や流れに使う:
+  <div class="infographic infographic--steps"><p class="infographic__title">タイトル</p><ol><li>内容</li><li>内容</li><li>内容</li></ol></div>
+  【表型】比較・データに使う:
+  <div class="infographic infographic--table"><p class="infographic__title">タイトル</p><table><thead><tr><th>列名</th><th>列名</th></tr></thead><tbody><tr><td>値</td><td>値</td></tr></tbody></table></div>
+  【チェックリスト型】確認事項・習慣リストに使う:
+  <div class="infographic infographic--checklist"><p class="infographic__title">タイトル</p><ul><li>項目</li><li>項目</li></ul></div>
+  【ポイント型】重要ポイントの強調に使う:
+  <div class="infographic infographic--points"><p class="infographic__title">タイトル</p><div class="infographic__point"><span class="infographic__point-num">01</span><span>内容</span></div><div class="infographic__point"><span class="infographic__point-num">02</span><span>内容</span></div></div>
 - FAQを2問以上（<div class="faq-box"><h3>質問</h3><p>回答</p></div> 形式で必ず出力）
 - 内部リンクとして /blog/ を1回入れる。アンカーテキストはリンク先のテーマを表す語句にする（例:「ダイエット習慣の関連記事」「食事管理の記事一覧」など。サイト名やURLをそのまま使わない）
 - 数字・具体的な期間・ステップを含め、抽象的な表現を避ける
 - JSONのみ返す${focusInstruction}
 
 JSON schema:
-{"title":"32文字前後のSEOタイトル","description":"110文字前後のメタディスクリプション","slug":"英数字ハイフンのURL slug","category":"カテゴリ","imageAlt1":"サムネイル画像alt","imageAlt2":"本文図解alt","imagePrompt1":"サムネイル用：記事テーマに合った写真風イメージ。人物・食事・運動シーン等、ピンク基調、清潔感、文字なし","imagePrompt2":"本文挿入用インフォグラフィック：記事の核心ポイントを1〜3点に絞ったシンプルな図解。アイコン・矢印・色分けブロックで構成し文字は一切入れない。ピンク・ミント・白ベース。スマホで一目で意味が伝わる余白たっぷりのレイアウト","bodyHtml":"本文HTML"}`;
+{"title":"32文字前後のSEOタイトル","description":"110文字前後のメタディスクリプション","slug":"英数字ハイフンのURL slug","category":"カテゴリ","imageAlt1":"サムネイル画像alt","imagePrompt1":"サムネイル用：記事テーマに合った写真風イメージ。人物・食事・運動シーン等、ピンク基調、清潔感、文字なし","bodyHtml":"本文HTML（インフォグラフィックHTMLを含む）"}`;
   const response = await fetch('https://api.anthropic.com/v1/messages', {
     method: 'POST',
     headers: {
@@ -110,13 +118,11 @@ function fallbackArticle(keyword) {
     slug: slugify(keyword),
     category: inferCategory(keyword),
     imageAlt1: `${keyword}を女性向けに解説する図解`,
-    imageAlt2: `${keyword}の実践ポイントをまとめた表`,
     imagePrompt1: `女性向けダイエット情報サイトの記事サムネイル。テーマは「${keyword}」。ピンク基調、清潔、スマホで見やすい、文字なし、健康的な食事と軽い運動の雰囲気。`,
-    imagePrompt2: `「${keyword}」の実践ポイントを示すシンプルな図解。ピンク、ミント、白、文字なし、表やチェックリスト風、健康的で上品。`,
     bodyHtml: `<p>${escapeHtml(keyword)}で大切なのは、短期間で無理をすることではなく、毎日の生活に入れやすい形へ整えることです。</p>
 <h2>${escapeHtml(keyword)}で最初に意識したいこと</h2>
 <p>まずは食事量を極端に減らすより、たんぱく質、食物繊維、水分、睡眠を整えます。女性は体調の波もあるため、続けられる強度にすることが重要です。</p>
-<img class="article-img" src="image-02.webp" alt="${escapeHtml(keyword)}の実践ポイントをまとめた表" width="1200" height="675" loading="lazy">
+<div class="infographic infographic--checklist"><p class="infographic__title">${escapeHtml(keyword)}で整えたい3つの基本</p><ul><li>たんぱく質を毎食意識してとる</li><li>食物繊維と水分で腸内環境を整える</li><li>睡眠7時間を確保してホルモンバランスを保つ</li></ul></div>
 <h2>失敗しやすいポイント</h2>
 <ul><li>最初から運動量を増やしすぎる</li><li>主食を完全に抜いて間食が増える</li><li>体重だけで判断して継続をやめる</li></ul>
 <h2>よくある質問</h2>
@@ -130,9 +136,7 @@ function normalizeArticle(article, keyword) {
   article.slug = slugify(article.slug || keyword);
   article.category ||= inferCategory(keyword);
   article.imageAlt1 ||= `${article.title}のサムネイル`;
-  article.imageAlt2 ||= `${article.title}の図解`;
   article.imagePrompt1 ||= `${article.title}。女性向けダイエットサイト用、ピンク基調、健康的、文字なし。`;
-  article.imagePrompt2 ||= `${article.title}の内容を説明する図解、ピンク基調、文字なし。`;
   return article;
 }
 
@@ -156,7 +160,6 @@ if (dryRun) {
 await fs.mkdir(dir, { recursive: true });
 await fs.writeFile(path.join(dir, 'index.html'), html);
 await generateArticleImage({ prompt: article.imagePrompt1, outFile: path.join(dir, 'image-01.webp'), fallbackTitle: article.title });
-await generateArticleImage({ prompt: article.imagePrompt2, outFile: path.join(dir, 'image-02.webp'), fallbackTitle: article.title });
 await updateIndexes();
 if (hasSupabaseConnection()) {
   await markKeywordUsed(keyword, article.slug);
