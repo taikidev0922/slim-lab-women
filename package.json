@@ -13,6 +13,7 @@
     "keywords:pipeline": "node scripts/keyword-pipeline.mjs",
     "keywords:pipeline:dry": "node scripts/keyword-pipeline.mjs --dry-run",
     "db:init": "node scripts/init-db.mjs",
+    "blog:fix-images": "node scripts/fix-missing-images.mjs",
     "validate": "node scripts/validate-site.mjs",
     "serve": "node scripts/serve-static.mjs"
   },
