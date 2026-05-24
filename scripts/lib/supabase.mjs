@@ -166,7 +166,11 @@ export async function insertArticle(article) {
       [article.slug, article.title, article.description, article.keyword, article.category, article.published_at, article.path]
     );
   }
-  return request('articles', { method: 'POST', body: JSON.stringify(article) });
+  return request('articles?on_conflict=slug', {
+    method: 'POST',
+    headers: { Prefer: 'resolution=merge-duplicates,return=representation' },
+    body: JSON.stringify(article)
+  });
 }
 
 export async function logUsage(provider, endpoint, consumedCredit = 0, metadata = {}) {
