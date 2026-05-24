@@ -84,6 +84,23 @@ for (const slug of slugs) {
 
 console.log(`\n完了: ${fixed} 枚の画像を生成しました`);
 
+if (fixed > 0) {
+  // blog/index.html と index.html の画像参照をSVG→WebPに更新
+  for (const htmlFile of [
+    path.join(root, 'blog', 'index.html'),
+    path.join(root, 'index.html')
+  ]) {
+    try {
+      let content = await fs.readFile(htmlFile, 'utf8');
+      const updated = content.replace(/image-01\.svg/g, 'image-01.webp');
+      if (updated !== content) {
+        await fs.writeFile(htmlFile, updated);
+        console.log(`インデックス更新: ${path.relative(root, htmlFile)}`);
+      }
+    } catch {}
+  }
+}
+
 async function exists(filePath) {
   try { await fs.access(filePath); return true; } catch { return false; }
 }
