@@ -153,7 +153,7 @@ h1 { max-width: 760px; font-size: clamp(32px, 9vw, 64px); }
 .article-list { grid-template-columns: repeat(3, 1fr); }
 .article-card img { width: 100%; aspect-ratio: 16 / 9; object-fit: cover; background: var(--pink-soft); }
 .article-card span { display: inline-block; margin: 14px 16px 6px; color: var(--pink-dark); font-size: 12px; font-weight: 800; }
-.article-card h3 { margin: 0 16px 8px; font-size: 18px; }
+.article-card h2, .article-card h3 { margin: 0 16px 8px; font-size: 18px; line-height: 1.5; }
 .article-card p { margin: 0 16px 18px; }
 
 .page-hero { padding: 40px 20px 22px; background: linear-gradient(180deg, var(--pink-soft), var(--paper)); }
