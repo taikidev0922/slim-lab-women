@@ -3,7 +3,7 @@ import path from 'node:path';
 
 export async function generateArticleImage({ prompt, outFile, fallbackTitle }) {
   const svgFile = outFile.replace(/\.\w+$/, '.svg');
-  const pngFile = outFile.replace(/\.\w+$/, '.png');
+  const webpFile = outFile.replace(/\.\w+$/, '.webp');
 
   if (!process.env.OPENAI_API_KEY) {
     await writeFallbackSvg(svgFile, fallbackTitle);
@@ -22,7 +22,8 @@ export async function generateArticleImage({ prompt, outFile, fallbackTitle }) {
         prompt,
         size: '1536x864',
         quality: 'medium',
-        output_format: 'png'
+        output_format: 'webp',
+        output_compression: 82
       })
     });
     const json = await response.json();
@@ -33,8 +34,8 @@ export async function generateArticleImage({ prompt, outFile, fallbackTitle }) {
     }
     const b64 = json.data?.[0]?.b64_json;
     if (!b64) throw new Error('OpenAI image response did not include b64_json');
-    await fs.writeFile(pngFile, Buffer.from(b64, 'base64'));
-    return pngFile;
+    await fs.writeFile(webpFile, Buffer.from(b64, 'base64'));
+    return webpFile;
   } catch (err) {
     console.warn(`OpenAI image error: ${err.message} — falling back to SVG`);
     await writeFallbackSvg(svgFile, fallbackTitle);

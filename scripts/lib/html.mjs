@@ -133,7 +133,7 @@ export function articlePage({ config, article, bodyHtml, date }) {
       </div>
     </section>
     <article class="article-body">
-      <img class="article-img" src="image-01.png" alt="${escapeHtml(article.imageAlt1)}" width="1200" height="675" fetchpriority="high">
+      <img class="article-img" src="image-01.webp" alt="${escapeHtml(article.imageAlt1)}" width="1200" height="675" fetchpriority="high">
       ${bodyHtml}
       <nav class="article-nav"><a class="button" href="/blog/">記事一覧へ戻る</a></nav>
     </article>
