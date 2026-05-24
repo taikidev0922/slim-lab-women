@@ -1,3 +1,3 @@
 User-agent: *
 Allow: /
-Sitemap: https://slim-lab-women.vercel.app/sitemap.xml
+Sitemap: https://www.slim-lab-women.com/sitemap.xml
