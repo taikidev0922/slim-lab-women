@@ -43,7 +43,7 @@ jobs:
           if [ -n "$(git status --porcelain)" ]; then
             git config user.name "github-actions[bot]"
             git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-            git add blog sitemap.xml feed.xml
+            git add blog sitemap.xml feed.xml index.html
             git commit -m "Add daily diet article"
             git push
           else
