@@ -22,8 +22,7 @@ export async function generateArticleImage({ prompt, outFile, fallbackTitle }) {
         prompt,
         size: '1536x864',
         quality: 'medium',
-        n: 1,
-        response_format: 'b64_json'
+        output_format: 'png'
       })
     });
     const json = await response.json();
