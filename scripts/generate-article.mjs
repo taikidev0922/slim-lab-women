@@ -101,7 +101,7 @@ JSON schema:
     },
     body: JSON.stringify({
       model: process.env.CLAUDE_MODEL || 'claude-sonnet-4-6',
-      max_tokens: 5000,
+      max_tokens: 10000,
       temperature: 0.55,
       messages: [{ role: 'user', content: prompt }]
     })
@@ -109,7 +109,17 @@ JSON schema:
   const json = await response.json();
   if (!response.ok) throw new Error(`Claude API error: ${JSON.stringify(json)}`);
   const text = json.content?.map((part) => part.text || '').join('\n') || '';
-  return JSON.parse(text.replace(/^```json\s*|\s*```$/g, ''));
+  const stopReason = json.stop_reason;
+  if (stopReason === 'max_tokens') {
+    console.warn(`[claude] stop_reason=max_tokens — response was truncated. Falling back to static article.`);
+    return fallbackArticle(keyword);
+  }
+  try {
+    return JSON.parse(text.replace(/^```json\s*|\s*```$/g, ''));
+  } catch (err) {
+    console.warn(`[claude] JSON parse failed (${err.message}). Falling back to static article.`);
+    return fallbackArticle(keyword);
+  }
 }
 
 function fallbackArticle(keyword) {
