@@ -90,7 +90,7 @@ function dayOfYear(isoDate) {
 async function generateWithClaude(keyword, { useFallback = false, existingArticles = [] } = {}) {
   if (useFallback || !process.env.ANTHROPIC_API_KEY) return fallbackArticle(keyword);
   const articleCategory = inferCategory(keyword);
-  const focusInstruction = articleCategory === 'ダイエットマインド'
+  const focusInstruction = articleCategory === 'マインド'
     ? '\n- 「続かない」「始められない」「やる気が出ない」心理に寄り添い、習慣化・環境づくり・小さな開始行動を中心にする\n- 根性論や自己否定を避け、食事制限や運動メニューだけの記事にしない'
     : '';
   const relatedArticlesNote = existingArticles.length > 0
@@ -186,7 +186,16 @@ function normalizeArticle(article, keyword) {
 
 function inferCategory(keyword) {
   if (/続かない|やる気|始められない|モチベ|習慣化|挫折|三日坊主|メンタル|自分に甘い|食べてしまう|ストレス/.test(keyword)) {
-    return 'ダイエットマインド';
+    return 'マインド';
+  }
+  if (/レシピ|献立|食事|朝ごはん|昼ごはん|夕飯|間食|外食|コンビニ|弁当|食べ物|食べ方|食べ過ぎ|禁酒|お酒|アルコール|糖質|カロリー|栄養|たんぱく質|プロテイン/.test(keyword)) {
+    return '食事管理';
+  }
+  if (/下腹|二の腕|脚痩せ|太もも|ヒップ|背中|ウエスト|お腹|くびれ/.test(keyword)) {
+    return '部位別';
+  }
+  if (/宅トレ|筋トレ|ストレッチ|ヨガ|ピラティス|エクササイズ|運動|フラフープ|ウォーキング/.test(keyword)) {
+    return '宅トレ';
   }
   return config.defaultCategory;
 }
