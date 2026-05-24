@@ -193,6 +193,18 @@ async function updateIndexes() {
   await fs.writeFile(path.join(blogDir, 'index.html'), renderBlogIndex(articles));
   await fs.writeFile(path.join(root, 'sitemap.xml'), renderSitemap(articles));
   await fs.writeFile(path.join(root, 'feed.xml'), renderFeed(articles));
+  await updateHomeLatest(articles.slice(0, 3));
+}
+
+async function updateHomeLatest(articles) {
+  const homePath = path.join(root, 'index.html');
+  let html = await fs.readFile(homePath, 'utf8');
+  const cards = articles.map((a) => `        <article class="article-card"><a href="/blog/${a.slug}/"><img src="/blog/${a.slug}/${a.image}" alt="${escapeHtml(a.title)}" width="800" height="450" loading="lazy"><span>${escapeHtml(a.category)}</span><h3>${escapeHtml(a.title)}</h3><p>${escapeHtml(a.description)}</p></a></article>`).join('\n');
+  html = html.replace(
+    /<!-- latest-start -->[\s\S]*?<!-- latest-end -->/,
+    `<!-- latest-start -->\n      <div class="article-list">\n${cards}\n      </div>\n      <!-- latest-end -->`
+  );
+  await fs.writeFile(homePath, html);
 }
 
 function renderBlogIndex(articles) {
