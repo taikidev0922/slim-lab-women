@@ -35,12 +35,17 @@ function selectRefreshSeeds(count) {
 async function chooseKeyword() {
   if (shouldUseMindKeyword()) return chooseMindKeyword();
   if (!dryRun) await ensureKeywordPool();
+
+  // DBキーワード + 既存記事タイトルの両方を重複チェックに使う
   const usedKeywords = await getUsedKeywords();
+  const existingTitles = await getExistingArticleTitles();
+  const usedAll = [...usedKeywords, ...existingTitles];
+
   // 類似キーワードをスキップして重複テーマの記事生成を防ぐ
   for (let attempt = 0; attempt < 8; attempt++) {
     const candidate = await getCandidateKeyword();
     if (!candidate) break;
-    if (isTooSimilarToUsed(candidate.keyword, usedKeywords)) {
+    if (isTooSimilarToUsed(candidate.keyword, usedAll)) {
       console.log(`[keyword] "${candidate.keyword}" は既存記事と類似 → rejected`);
       await rejectKeyword(candidate.id);
       continue;
@@ -51,20 +56,39 @@ async function chooseKeyword() {
   return config.keywordSeeds[Math.floor(Math.random() * config.keywordSeeds.length)];
 }
 
+async function getExistingArticleTitles() {
+  try {
+    const blogDir = path.join(root, 'blog');
+    const slugs = (await fs.readdir(blogDir, { withFileTypes: true }))
+      .filter((d) => d.isDirectory()).map((d) => d.name);
+    const titles = [];
+    for (const slug of slugs) {
+      try {
+        const content = await fs.readFile(path.join(blogDir, slug, 'index.html'), 'utf8');
+        const title = content.match(/<h1[^>]*>(.*?)<\/h1>/s)?.[1]?.replace(/<[^>]+>/g, '');
+        if (title) titles.push(title);
+      } catch {}
+    }
+    return titles;
+  } catch { return []; }
+}
+
 // 汎用的すぎる単語（ほぼ全記事に含まれる）を除外したうえで主題語を抽出
 const GENERIC_WORDS = new Set([
   'ダイエット', '女性', '簡単', '方法', '効果', 'コツ', '始め方', '習慣', 'おすすめ',
   '初心者', '食事', 'レシピ', '運動', 'トレーニング', '対策', '解説', 'まとめ'
 ]);
 
-function extractTopicWords(keyword) {
-  return keyword.split(/[\s　]+/).filter((w) => w.length >= 3 && !GENERIC_WORDS.has(w));
+function extractTopicWords(text) {
+  // スペース区切りのキーワードとタイトル文字列の両方に対応
+  const tokens = text.split(/[\s　｜|・、。！？\-\[\]【】「」]+/).filter(Boolean);
+  return tokens.filter((w) => w.length >= 3 && !GENERIC_WORDS.has(w));
 }
 
-function isTooSimilarToUsed(keyword, usedKeywords) {
+function isTooSimilarToUsed(keyword, usedList) {
   const newTopics = extractTopicWords(keyword);
   if (!newTopics.length) return false;
-  return usedKeywords.some((used) => {
+  return usedList.some((used) => {
     const usedTopics = extractTopicWords(used);
     return newTopics.some((w) => usedTopics.includes(w));
   });
