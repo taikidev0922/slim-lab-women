@@ -74,15 +74,17 @@ async function generateWithClaude(keyword, { useFallback = false } = {}) {
 - 検索意図にすぐ答える
 - スマホで読みやすい短めの段落
 - h2/h3を含む本文HTML
-- 記事途中にインフォグラフィックを1個入れる。記事内容に合ったタイプを選び、以下のHTMLをそのままbodyHtmlに含める：
-  【ステップ型】手順や流れに使う:
-  <div class="infographic infographic--steps"><p class="infographic__title">タイトル</p><ol><li>内容</li><li>内容</li><li>内容</li></ol></div>
-  【表型】比較・データに使う:
-  <div class="infographic infographic--table"><p class="infographic__title">タイトル</p><table><thead><tr><th>列名</th><th>列名</th></tr></thead><tbody><tr><td>値</td><td>値</td></tr></tbody></table></div>
-  【チェックリスト型】確認事項・習慣リストに使う:
-  <div class="infographic infographic--checklist"><p class="infographic__title">タイトル</p><ul><li>項目</li><li>項目</li></ul></div>
-  【ポイント型】重要ポイントの強調に使う:
-  <div class="infographic infographic--points"><p class="infographic__title">タイトル</p><div class="infographic__point"><span class="infographic__point-num">01</span><span>内容</span></div><div class="infographic__point"><span class="infographic__point-num">02</span><span>内容</span></div></div>
+- 記事の途中に、その記事の核心内容を視覚化するオリジナルのインフォグラフィックを1個生成してbodyHtmlに含める
+  生成ルール（必ず守ること）：
+  ① ラッパー<div>にユニーククラス名（内容を表す名前、例: .ig-steps .ig-compare .ig-check .ig-timeline）を付ける
+  ② その<div>の直前に<style>タグを置き、①のクラスでスコープしたCSSを定義する（他の要素に干渉しない）
+  ③ ブランドカラー：ピンク#ec5c93 / 濃ピンク#c93f74 / ミント#69c9b8 / 薄ピンク#fff1f6 / ボーダー#ead7df / テキスト#231923
+  ④ タイトルバー必須：background:linear-gradient(135deg,#ec5c93,#69c9b8); color:#fff; font-weight:800; padding:10px 16px; margin:0
+  ⑤ 外枠：border:2px solid #ead7df; border-radius:14px; overflow:hidden; margin:28px 0; max-width:100%
+  ⑥ 本文フォントサイズ13-14px・行間1.6・スマホで読めるpadding
+  ⑦ 数字バッジ・矢印・絵文字・色分け背景・グリッドレイアウトなどを活用して視覚的にわかりやすくする
+  ⑧ 形式はステップ/比較表/チェックリスト/ポイントカード/タイムライン等、記事の核心に最適なものを自由に選ぶ
+  ⑨ 表を使う場合：th{background:#fff1f6;font-weight:800;border-bottom:2px solid #ec5c93} td{border-bottom:1px solid #fff1f6} overflow-x:auto でスマホ対応
 - FAQを2問以上（<div class="faq-box"><h3>質問</h3><p>回答</p></div> 形式で必ず出力）
 - 内部リンクとして /blog/ を1回入れる。アンカーテキストはリンク先のテーマを表す語句にする（例:「ダイエット習慣の関連記事」「食事管理の記事一覧」など。サイト名やURLをそのまま使わない）
 - 数字・具体的な期間・ステップを含め、抽象的な表現を避ける
@@ -122,7 +124,8 @@ function fallbackArticle(keyword) {
     bodyHtml: `<p>${escapeHtml(keyword)}で大切なのは、短期間で無理をすることではなく、毎日の生活に入れやすい形へ整えることです。</p>
 <h2>${escapeHtml(keyword)}で最初に意識したいこと</h2>
 <p>まずは食事量を極端に減らすより、たんぱく質、食物繊維、水分、睡眠を整えます。女性は体調の波もあるため、続けられる強度にすることが重要です。</p>
-<div class="infographic infographic--checklist"><p class="infographic__title">${escapeHtml(keyword)}で整えたい3つの基本</p><ul><li>たんぱく質を毎食意識してとる</li><li>食物繊維と水分で腸内環境を整える</li><li>睡眠7時間を確保してホルモンバランスを保つ</li></ul></div>
+<style>.ig-basics{border:2px solid #ead7df;border-radius:14px;overflow:hidden;margin:28px 0}.ig-basics__title{background:linear-gradient(135deg,#ec5c93,#69c9b8);color:#fff;font-weight:800;padding:10px 16px;margin:0;font-size:14px}.ig-basics__list{margin:0;padding:14px 16px;display:flex;flex-direction:column;gap:10px;list-style:none;background:#fff}.ig-basics__list li{display:flex;gap:10px;align-items:flex-start;font-size:14px;line-height:1.6}.ig-basics__list li::before{content:"✓";color:#69c9b8;font-weight:800;font-size:16px;flex-shrink:0}</style>
+<div class="ig-basics"><p class="ig-basics__title">✨ ${escapeHtml(keyword)}で整えたい3つの基本</p><ul class="ig-basics__list"><li>たんぱく質を毎食意識してとる（目安：体重×1g）</li><li>食物繊維と水分で腸内環境を整える（1日1.5L以上）</li><li>睡眠7時間を確保してホルモンバランスを保つ</li></ul></div>
 <h2>失敗しやすいポイント</h2>
 <ul><li>最初から運動量を増やしすぎる</li><li>主食を完全に抜いて間食が増える</li><li>体重だけで判断して継続をやめる</li></ul>
 <h2>よくある質問</h2>
