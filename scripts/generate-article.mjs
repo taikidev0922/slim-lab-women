@@ -13,7 +13,8 @@ await loadEnv();
 const dryRun = process.argv.includes('--dry-run') || process.env.DRY_RUN === 'true';
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const config = await loadConfig();
-const date = nowJst();
+const today = todayJst();   // YYYY-MM-DD — keyword rotation / day-of-year logic
+const date = nowJst();      // YYYY-MM-DDTHH:MM:SS+09:00 — article timestamps
 
 async function ensureKeywordPool() {
   const count = await countUnusedKeywords();
@@ -27,7 +28,7 @@ function selectRefreshSeeds(count) {
     ? [...(config.mindKeywords || []), ...(config.keywordSeeds || [])]
     : config.keywordSeeds || [];
   if (!seeds.length) return [];
-  const start = dayOfYear(date) % seeds.length;
+  const start = dayOfYear(today) % seeds.length;
   return Array.from({ length: count }, (_, index) => seeds[(start + index) % seeds.length]);
 }
 
@@ -44,12 +45,12 @@ async function chooseKeyword() {
 
 function shouldUseMindKeyword() {
   const interval = Number(config.mindPostIntervalDays || 0);
-  return interval > 0 && Array.isArray(config.mindKeywords) && config.mindKeywords.length > 0 && dayOfYear(date) % interval === 0;
+  return interval > 0 && Array.isArray(config.mindKeywords) && config.mindKeywords.length > 0 && dayOfYear(today) % interval === 0;
 }
 
 function chooseMindKeyword() {
   const keywords = config.mindKeywords;
-  return keywords[dayOfYear(date) % keywords.length];
+  return keywords[dayOfYear(today) % keywords.length];
 }
 
 function dayOfYear(isoDate) {
@@ -199,7 +200,7 @@ async function updateIndexes() {
       const title = content.match(/<h1[^>]*>(.*?)<\/h1>/s)?.[1]?.replace(/<[^>]+>/g, '') || slug;
       const description = content.match(/<meta name="description" content="([^"]+)"/)?.[1] || '';
       const category = content.match(/<div class="article-meta"><span>(.*?)<\/span>/s)?.[1]?.replace(/<[^>]+>/g, '') || config.defaultCategory;
-      const dateText = content.match(/<time datetime="([^"]+)"/)?.[1] || date;
+      const dateText = content.match(/<time datetime="([^"]+)"/)?.[1] || today;
       const hasWebp = await exists(path.join(blogDir, slug, 'image-01.webp'));
       const hasPng = await exists(path.join(blogDir, slug, 'image-01.png'));
       const hasSvg = await exists(path.join(blogDir, slug, 'image-01.svg'));
@@ -239,12 +240,12 @@ async function exists(file) {
 }
 
 function renderSitemap(articles) {
-  const staticUrls = ['/', '/blog/', '/about/', '/contact/'].map((url) => `  <url><loc>${config.siteUrl}${url}</loc><lastmod>${date}</lastmod><changefreq>${url === '/about/' ? 'monthly' : 'daily'}</changefreq><priority>${url === '/' ? '1.0' : '0.8'}</priority></url>`);
-  const articleUrls = articles.map((a) => `  <url><loc>${config.siteUrl}/blog/${a.slug}/</loc><lastmod>${a.date}</lastmod><changefreq>monthly</changefreq><priority>0.8</priority></url>`);
+  const staticUrls = ['/', '/blog/', '/about/', '/contact/'].map((url) => `  <url><loc>${config.siteUrl}${url}</loc><lastmod>${today}</lastmod><changefreq>${url === '/about/' ? 'monthly' : 'daily'}</changefreq><priority>${url === '/' ? '1.0' : '0.8'}</priority></url>`);
+  const articleUrls = articles.map((a) => `  <url><loc>${config.siteUrl}/blog/${a.slug}/</loc><lastmod>${a.date.slice(0, 10)}</lastmod><changefreq>monthly</changefreq><priority>0.8</priority></url>`);
   return `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n${[...staticUrls, ...articleUrls].join('\n')}\n</urlset>\n`;
 }
 
 function renderFeed(articles) {
-  const items = articles.slice(0, 30).map((a) => `<item><title>${escapeHtml(a.title)}</title><link>${config.siteUrl}/blog/${a.slug}/</link><guid>${config.siteUrl}/blog/${a.slug}/</guid><pubDate>${new Date(`${a.date}T00:00:00+09:00`).toUTCString()}</pubDate><description>${escapeHtml(a.description)}</description></item>`).join('');
+  const items = articles.slice(0, 30).map((a) => `<item><title>${escapeHtml(a.title)}</title><link>${config.siteUrl}/blog/${a.slug}/</link><guid>${config.siteUrl}/blog/${a.slug}/</guid><pubDate>${new Date(a.date.includes('T') ? a.date : `${a.date}T00:00:00+09:00`).toUTCString()}</pubDate><description>${escapeHtml(a.description)}</description></item>`).join('');
   return `<?xml version="1.0" encoding="UTF-8"?><rss version="2.0"><channel><title>${config.siteName}</title><link>${config.siteUrl}/</link><description>${config.description}</description><language>ja</language>${items}</channel></rss>`;
 }
