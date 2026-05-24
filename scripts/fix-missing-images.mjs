@@ -66,7 +66,7 @@ for (const slug of slugs) {
   if (hasSvg2 && !hasWebp2) {
     const alt = html.match(/src="image-02\.[^"]*"\s+alt="([^"]+)"/)?.[1]
       || '女性向けダイエット記事の図解';
-    const prompt = `女性向けダイエット情報サイト用の記事内画像。テーマ:「${alt}」。ピンク基調、ミント、白、文字なし、健康的で上品。`;
+    const prompt = `女性向けダイエット情報サイト用の記事内インフォグラフィック。テーマ:「${alt}」。記事の核心ポイントをアイコン・矢印・色分けブロックで視覚化。文字なし、ピンク・ミント・白ベース、余白たっぷりのシンプルなレイアウト、スマホで一目で意味が伝わるデザイン。`;
     console.log(`[${slug}] image-02 を生成中...`);
     const outFile = await generateArticleImage({ prompt, outFile: path.join(dir, 'image-02.webp'), fallbackTitle: alt });
     if (!outFile.endsWith('.svg')) {

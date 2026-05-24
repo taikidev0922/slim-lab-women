@@ -81,7 +81,7 @@ async function generateWithClaude(keyword, { useFallback = false } = {}) {
 - JSONのみ返す${focusInstruction}
 
 JSON schema:
-{"title":"32文字前後のSEOタイトル","description":"110文字前後のメタディスクリプション","slug":"英数字ハイフンのURL slug","category":"カテゴリ","imageAlt1":"サムネイル画像alt","imageAlt2":"本文画像alt","imagePrompt1":"gpt-image用の日本語プロンプト","imagePrompt2":"gpt-image用の日本語プロンプト","bodyHtml":"本文HTML"}`;
+{"title":"32文字前後のSEOタイトル","description":"110文字前後のメタディスクリプション","slug":"英数字ハイフンのURL slug","category":"カテゴリ","imageAlt1":"サムネイル画像alt","imageAlt2":"本文図解alt","imagePrompt1":"サムネイル用：記事テーマに合った写真風イメージ。人物・食事・運動シーン等、ピンク基調、清潔感、文字なし","imagePrompt2":"本文挿入用インフォグラフィック：記事の核心ポイントを1〜3点に絞ったシンプルな図解。アイコン・矢印・色分けブロックで構成し文字は一切入れない。ピンク・ミント・白ベース。スマホで一目で意味が伝わる余白たっぷりのレイアウト","bodyHtml":"本文HTML"}`;
   const response = await fetch('https://api.anthropic.com/v1/messages', {
     method: 'POST',
     headers: {
