@@ -166,7 +166,7 @@ export function articlePage({ config, article, bodyHtml, date }) {
   <main>
     <section class="article-hero">
       <div class="article-hero__inner">
-        <div class="article-meta"><span>${escapeHtml(article.category)}</span><time datetime="${date}">${date.replaceAll('-', '.')}</time></div>
+        <div class="article-meta"><span>${escapeHtml(article.category)}</span><time datetime="${date}">${date.slice(0, 10).replaceAll('-', '.')}</time></div>
         <h1>${escapeHtml(article.title)}</h1>
       </div>
     </section>

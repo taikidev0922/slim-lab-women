@@ -2,7 +2,7 @@ import fs from 'node:fs/promises';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { loadEnv } from './lib/env.mjs';
-import { loadConfig, todayJst } from './lib/config.mjs';
+import { loadConfig, todayJst, nowJst } from './lib/config.mjs';
 import { articlePage, escapeHtml, slugify } from './lib/html.mjs';
 import { countUnusedKeywords, getCandidateKeyword, hasSupabaseConnection, insertArticle, markKeywordUsed, reserveKeyword } from './lib/supabase.mjs';
 import { refreshKeywordsFromRakko } from './lib/rakko.mjs';
@@ -13,7 +13,7 @@ await loadEnv();
 const dryRun = process.argv.includes('--dry-run') || process.env.DRY_RUN === 'true';
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const config = await loadConfig();
-const date = todayJst();
+const date = nowJst();
 
 async function ensureKeywordPool() {
   const count = await countUnusedKeywords();
