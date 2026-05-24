@@ -30,14 +30,14 @@ if (menuButton && siteNav) {
   const h1 = document.querySelector('.page-hero h1');
   if (h1) h1.textContent = cat;
 
-  const desc = document.querySelector('.page-hero p');
+  // eyebrow以外の最初の<p>を説明文として使う
+  const eyebrow = document.querySelector('.page-hero .eyebrow');
+  if (eyebrow) eyebrow.textContent = cat;
+
+  const desc = document.querySelector('.page-hero__inner > p:not(.eyebrow)');
   if (desc) {
     desc.textContent = count > 0
       ? `「${cat}」の記事が ${count} 件あります。`
       : `「${cat}」の記事はまだ準備中です。しばらくお待ちください。`;
   }
-
-  // アクティブカテゴリをパンくず的に eyebrow に表示
-  const eyebrow = document.querySelector('.page-hero .eyebrow');
-  if (eyebrow) eyebrow.textContent = cat;
 })();
