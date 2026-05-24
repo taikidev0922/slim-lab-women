@@ -75,8 +75,9 @@ async function generateWithClaude(keyword, { useFallback = false } = {}) {
 - スマホで読みやすい短めの段落
 - h2/h3を含む本文HTML
 - 記事途中に <img class="article-img" src="image-02.webp" alt="..."> を1回入れる
-- FAQを2問以上
-- 内部リンクとして /blog/ を自然に1回入れる
+- FAQを2問以上（<div class="faq-box"><h3>質問</h3><p>回答</p></div> 形式で必ず出力）
+- 内部リンクとして /blog/ を1回入れる。アンカーテキストはリンク先のテーマを表す語句にする（例:「ダイエット習慣の関連記事」「食事管理の記事一覧」など。サイト名やURLをそのまま使わない）
+- 数字・具体的な期間・ステップを含め、抽象的な表現を避ける
 - JSONのみ返す${focusInstruction}
 
 JSON schema:

@@ -66,6 +66,32 @@ export function plainText(html) {
   return String(html).replace(/<[^>]*>/g, '').replace(/\s+/g, ' ').trim();
 }
 
+function extractFaq(html) {
+  const items = [];
+
+  // 形式1: <div class="faq-box"><h3>Q</h3><p>A</p></div>
+  const boxRegex = /<div[^>]*class="faq-box"[^>]*>([\s\S]*?)<\/div>/gi;
+  let match;
+  while ((match = boxRegex.exec(html)) !== null) {
+    const block = match[1];
+    const q = block.match(/<h3[^>]*>([\s\S]*?)<\/h3>/i)?.[1]?.replace(/<[^>]*>/g, '').trim();
+    const a = block.match(/<p[^>]*>([\s\S]*?)<\/p>/i)?.[1]?.replace(/<[^>]*>/g, '').trim();
+    if (q && a) items.push({ q, a });
+  }
+
+  // 形式2: <h3>Q. 質問</h3><p>A. 回答</p>
+  if (items.length === 0) {
+    const qRegex = /<h3[^>]*>Q[.．]\s*([\s\S]*?)<\/h3>\s*<p[^>]*>A[.．]\s*([\s\S]*?)<\/p>/gi;
+    while ((match = qRegex.exec(html)) !== null) {
+      const q = match[1].replace(/<[^>]*>/g, '').trim();
+      const a = match[2].replace(/<[^>]*>/g, '').trim();
+      if (q && a) items.push({ q, a });
+    }
+  }
+
+  return items;
+}
+
 export function articlePage({ config, article, bodyHtml, date }) {
   const url = `${config.siteUrl}/blog/${article.slug}/`;
   const image = `${url}image-01.webp`;
@@ -97,6 +123,17 @@ export function articlePage({ config, article, bodyHtml, date }) {
     ]
   };
 
+  const faqItems = extractFaq(bodyHtml);
+  const faqSchema = faqItems.length > 0 ? {
+    '@context': 'https://schema.org',
+    '@type': 'FAQPage',
+    mainEntity: faqItems.map(({ q, a }) => ({
+      '@type': 'Question',
+      name: q,
+      acceptedAnswer: { '@type': 'Answer', text: a }
+    }))
+  } : null;
+
   return `<!DOCTYPE html>
 <html lang="ja">
 <head>
@@ -118,6 +155,7 @@ export function articlePage({ config, article, bodyHtml, date }) {
   <link rel="stylesheet" href="/style.css">
   <script type="application/ld+json">${JSON.stringify(breadcrumb)}</script>
   <script type="application/ld+json">${JSON.stringify(jsonArticle)}</script>
+  ${faqSchema ? `<script type="application/ld+json">${JSON.stringify(faqSchema)}</script>` : ''}
 </head>
 <body class="article-page">
   <header class="site-header" id="header">
