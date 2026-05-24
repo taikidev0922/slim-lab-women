@@ -185,6 +185,37 @@ h1 { max-width: 760px; font-size: clamp(32px, 9vw, 64px); }
   border: 1px solid var(--line);
 }
 
+/* ── Related Articles ── */
+.related-articles {
+  margin: 32px 0 8px;
+  padding: 18px 20px;
+  border-radius: var(--radius);
+  background: var(--pink-soft);
+  border: 1px solid var(--line);
+}
+.related-articles h2 {
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--brand);
+  margin: 0 0 10px;
+}
+.related-articles ul {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.related-articles li::before { content: "▶ "; color: var(--brand); font-size: 10px; }
+.related-articles a {
+  color: var(--text);
+  font-size: 14px;
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+.related-articles a:hover { color: var(--brand); }
+
 /* ── Infographic ── */
 .infographic {
   margin: 28px 0;
