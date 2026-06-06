@@ -1,5 +1,6 @@
 import fs from 'node:fs/promises';
 import path from 'node:path';
+import sharp from 'sharp';
 
 export async function generateArticleImage({ prompt, outFile, fallbackTitle }) {
   const svgFile = outFile.replace(/\.\w+$/, '.svg');
@@ -34,7 +35,15 @@ export async function generateArticleImage({ prompt, outFile, fallbackTitle }) {
     }
     const b64 = json.data?.[0]?.b64_json;
     if (!b64) throw new Error('OpenAI image response did not include b64_json');
-    await fs.writeFile(webpFile, Buffer.from(b64, 'base64'));
+    // 表示幅(1200px)に合わせて縮小・再圧縮してから保存（ページ速度・クロール効率の改善）
+    const raw = Buffer.from(b64, 'base64');
+    let toSave = raw;
+    try {
+      toSave = await sharp(raw).resize({ width: 1200, withoutEnlargement: true }).webp({ quality: 80 }).toBuffer();
+    } catch (e) {
+      console.warn(`sharp optimize skipped: ${e.message}`);
+    }
+    await fs.writeFile(webpFile, toSave);
     return webpFile;
   } catch (err) {
     console.warn(`OpenAI image error: ${err.message} — falling back to SVG`);
