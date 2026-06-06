@@ -1,3 +1,7 @@
+export const ANALYTICS_TAG = `<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-04JT4WBLQB"></script>
+<script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','G-04JT4WBLQB');</script>`;
+
 export function escapeHtml(value = '') {
   return String(value)
     .replaceAll('&', '&amp;')
@@ -156,6 +160,7 @@ export function articlePage({ config, article, bodyHtml, date }) {
   <script type="application/ld+json">${JSON.stringify(breadcrumb)}</script>
   <script type="application/ld+json">${JSON.stringify(jsonArticle)}</script>
   ${faqSchema ? `<script type="application/ld+json">${JSON.stringify(faqSchema)}</script>` : ''}
+  ${ANALYTICS_TAG}
 </head>
 <body class="article-page">
   <header class="site-header" id="header">
